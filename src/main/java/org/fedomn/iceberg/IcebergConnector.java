@@ -1,5 +1,6 @@
 package org.fedomn.iceberg;
 
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -91,5 +92,25 @@ public class IcebergConnector {
   public List<String> listTables(String dbName) {
     List<TableIdentifier> tables = hiveCatalog.listTables(Namespace.of(dbName));
     return tables.stream().map(TableIdentifier::name).collect(Collectors.toList());
+  }
+
+  public void showSnapshotFiles(String dbName, String tableName, long snapshotId) {
+    Table table = hiveCatalog.loadTable(TableIdentifier.of(dbName, tableName));
+    TableScan scan = table.newScan().useSnapshot(snapshotId);
+    CloseableIterable<FileScanTask> scanTasks = scan.planFiles();
+
+    List<String> dataFiles = new ArrayList<>();
+    List<String> deleteFiles = new ArrayList<>();
+    for (FileScanTask scanTask : scanTasks) {
+      dataFiles.add(scanTask.file().path().toString());
+      for (DeleteFile deleteFile : scanTask.deletes()) {
+        deleteFiles.add(deleteFile.path().toString());
+      }
+    }
+
+    System.out.println("dataFiles:-------------------");
+    dataFiles.forEach(System.out::println);
+    System.out.println("deleteFiles:-------------------");
+    deleteFiles.forEach(System.out::println);
   }
 }

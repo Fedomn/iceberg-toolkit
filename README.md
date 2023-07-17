@@ -20,6 +20,14 @@ configResources:
   - /etc/hadoop/conf/hdfs-site.xml
 ```
 
+## usage
+
+```shell
+java -jar iceberg-toolkit-1.0.0.jar checkFileInManagement file.parquet db table
+java -jar iceberg-toolkit-1.0.0.jar showSnapshotFiles snapshotId db table
+```
+
+
 ## others
 
 use `mvn dependency:tree -Dverbose -Dincludes=org.slf4j:slf4j-\*` to check the dependency tree.

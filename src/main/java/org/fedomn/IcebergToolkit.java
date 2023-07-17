@@ -17,14 +17,25 @@ public class IcebergToolkit {
 
     IcebergConnector iceberg = new IcebergConnector(hiveCatalogConfig);
 
-    String filename = args[0];
-    String dbName = args[1];
-    String tableName = args[2];
+    String functionType = args[0];
+    if ("checkFileInManagement".equals(functionType)) {
+      String filename = args[1];
+      String dbName = args[2];
+      String tableName = args[3];
 
-    System.out.println("listTables: " + iceberg.listTables(dbName));
+      System.out.println("listTables: " + iceberg.listTables(dbName));
 
-    System.out.println(
-        "checkFileInManagement: " + filename + " in " + dbName + "." + tableName + " ...");
-    iceberg.checkFileInManagement(filename, dbName, tableName);
+      System.out.println(
+          "checkFileInManagement: " + filename + " in " + dbName + "." + tableName + " ...");
+      iceberg.checkFileInManagement(filename, dbName, tableName);
+    } else if ("showSnapshotFiles".equals(functionType)) {
+      String snapshotId = args[1];
+      String dbName = args[2];
+      String tableName = args[3];
+
+      System.out.println(
+          "shouSnapshotFiles: " + snapshotId + " " + dbName + "." + tableName + " ...");
+      iceberg.showSnapshotFiles(dbName, tableName, Long.parseLong(snapshotId));
+    }
   }
 }
