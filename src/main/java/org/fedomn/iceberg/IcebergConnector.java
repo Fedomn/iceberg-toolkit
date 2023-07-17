@@ -1,6 +1,6 @@
 package org.fedomn.iceberg;
 
-
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,35 +53,39 @@ public class IcebergConnector {
       }
     }
 
+    List<String> checkResult = new ArrayList<>();
     for (Snapshot snapshot : snapshots) {
       TableScan scan = table.newScan().useSnapshot(snapshot.snapshotId());
       CloseableIterable<FileScanTask> scanTasks = scan.planFiles();
       for (FileScanTask scanTask : scanTasks) {
         if (scanTask.file().path().toString().contains(filename)) {
-          System.out.println(
+          checkResult.add(
               "File "
                   + filename
                   + " is data file in snapshot: "
                   + snapshot.snapshotId()
                   + ", full path is "
                   + scanTask.file().path().toString());
-          return;
         }
         for (DeleteFile deleteFile : scanTask.deletes()) {
           if (deleteFile.path().toString().contains(filename)) {
-            System.out.println(
+            checkResult.add(
                 "File "
                     + filename
                     + " is delete file in snapshot: "
                     + snapshot.snapshotId()
                     + ", full path is "
                     + deleteFile.path().toString());
-            return;
           }
         }
       }
     }
-    System.out.println("File " + filename + " is not in management.");
+    if (!checkResult.isEmpty()) {
+      System.out.println("checkResult:-------------------");
+      checkResult.forEach(System.out::println);
+    } else {
+      System.out.println("File " + filename + " is not in management.");
+    }
   }
 
   public List<String> listTables(String dbName) {
