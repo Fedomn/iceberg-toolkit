@@ -53,9 +53,8 @@ public class IcebergConnector {
       }
     }
 
-    TableScan scan = table.newScan();
     for (Snapshot snapshot : snapshots) {
-      scan = scan.useSnapshot(snapshot.snapshotId());
+      TableScan scan = table.newScan().useSnapshot(snapshot.snapshotId());
       CloseableIterable<FileScanTask> scanTasks = scan.planFiles();
       for (FileScanTask scanTask : scanTasks) {
         if (scanTask.file().path().toString().contains(filename)) {
